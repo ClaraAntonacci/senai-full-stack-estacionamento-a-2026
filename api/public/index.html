@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estacionamento ACME</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            border-bottom: 2px solid #e0e0e0;
+            background: #f5f5f5;
+        }
+
+        .nav-tabs button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tabs button:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        .nav-tabs button.active {
+            border-bottom-color: #667eea;
+            color: #667eea;
+            background: white;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th {
+            background: #f5f5f5;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        table td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        table tr:hover {
+            background: #f9f9f9;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-buttons button {
+            padding: 8px 15px;
+            font-size: 0.9em;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-tabs {
+                flex-wrap: wrap;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+
+            table th, table td {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🅿️ Estacionamento ACME</h1>
+            <p>Sistema Web de Controle de Estacionamento</p>
+        </header>
+
+        <div class="nav-tabs">
+            <button class="nav-btn active" data-tab="veiculos">Veículos</button>
+            <button class="nav-btn" data-tab="estadias">Estadias</button>
+        </div>
+
+        <div class="content">
+            <!-- TAB VEÍCULOS -->
+            <div id="veiculos" class="tab-content active">
+                <h2>Gerenciar Veículos</h2>
+                <div id="veiculoAlert"></div>
+
+                <div style="margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 20px; color: #667eea;">Cadastrar Novo Veículo</h3>
+                    <form id="formVeiculo">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Placa *</label>
+                                <input type="text" id="veiculo_placa" placeholder="ABC-1234" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Marca *</label>
+                                <input type="text" id="veiculo_marca" placeholder="Ex: Ford" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Modelo *</label>
+                                <input type="text" id="veiculo_modelo" placeholder="Ex: Fiesta" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Ano</label>
+                                <input type="number" id="veiculo_ano" placeholder="2024">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Cor</label>
+                                <input type="text" id="veiculo_cor" placeholder="Branco">
+                            </div>
+                            <div class="form-group">
+                                <label>Valor/Hora (R$) *</label>
+                                <input type="number" id="veiculo_valorHora" placeholder="50.00" step="0.01" required>
+                            </div>
+                        </div>
+                        <button type="submit">Cadastrar Veículo</button>
+                    </form>
+                </div>
+
+                <hr style="margin: 30px 0; border: none; border-top: 2px solid #e0e0e0;">
+
+                <h3 style="margin-bottom: 20px; color: #667eea;">Lista de Veículos</h3>
+                <div id="veiculosList" class="loading">Carregando...</div>
+            </div>
+
+            <!-- TAB ESTADIAS -->
+            <div id="estadias" class="tab-content">
+                <h2>Gerenciar Estadias</h2>
+                <div id="estadiaAlert"></div>
+
+                <div style="margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 20px; color: #667eea;">Registrar Nova Estadia</h3>
+                    <form id="formEstadia">
+                        <div class="form-group">
+                            <label>Veículo *</label>
+                            <select id="estadia_veiculoId" required>
+                                <option value="">-- Selecione um veículo --</option>
+                            </select>
+                        </div>
+                        <button type="submit">Registrar Entrada</button>
+                    </form>
+                </div>
+
+                <hr style="margin: 30px 0; border: none; border-top: 2px solid #e0e0e0;">
+
+                <h3 style="margin-bottom: 20px; color: #667eea;">Estadias Ativas</h3>
+                <div id="estadiasList" class="loading">Carregando...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PARA REGISTRAR SAÍDA -->
+    <div id="modalSaida" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Registrar Saída</div>
+            <form id="formSaida">
+                <div class="form-group">
+                    <label>Hora da Saída *</label>
+                    <input type="datetime-local" id="saida_data" required>
+                </div>
+                <div class="form-group" style="background: #f5f5f5; padding: 15px; border-radius: 5px;">
+                    <strong>Valor Total Estimado: R$ <span id="valorTotalEstimado">0.00</span></strong>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="fecharModalSaida()" class="btn-danger">Cancelar</button>
+                    <button type="submit" class="btn-success">Confirmar Saída</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "http://localhost:3000";
+        let estadiaEmEdicao = null;
+
+        // TABS
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+                
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab).classList.add('active');
+            });
+        });
+
+        // VEÍCULOS
+        document.getElementById('formVeiculo').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const dados = {
+                placa: document.getElementById('veiculo_placa').value,
+                marca: document.getElementById('veiculo_marca').value,
+                modelo: document.getElementById('veiculo_modelo').value,
+                ano: document.getElementById('veiculo_ano').value ? parseInt(document.getElementById('veiculo_ano').value) : null,
+                cor: document.getElementById('veiculo_cor').value || null,
+                valorHora: parseFloat(document.getElementById('veiculo_valorHora').value)
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/veiculos`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dados)
+                });
+
+                if (response.ok) {
+                    mostrarAlerta('veiculoAlert', 'Veículo cadastrado com sucesso!', 'success');
+                    document.getElementById('formVeiculo').reset();
+                    carregarVeiculos();
+                } else {
+                    mostrarAlerta('veiculoAlert', 'Erro ao cadastrar veículo', 'error');
+                }
+            } catch (error) {
+                mostrarAlerta('veiculoAlert', 'Erro ao conectar com a API', 'error');
+            }
+        });
+
+        async function carregarVeiculos() {
+            try {
+                const response = await fetch(`${API_URL}/veiculos`);
+                const veiculos = await response.json();
+
+                let html = '';
+                if (veiculos.length === 0) {
+                    html = '<div class="empty-state">Nenhum veículo cadastrado</div>';
+                } else {
+                    html = '<table><thead><tr><th>Placa</th><th>Marca</th><th>Modelo</th><th>Ano</th><th>Cor</th><th>Valor/Hora</th><th>Ações</th></tr></thead><tbody>';
+                    veiculos.forEach(v => {
+                        html += `<tr>
+                            <td>${v.placa}</td>
+                            <td>${v.marca}</td>
+                            <td>${v.modelo}</td>
+                            <td>${v.ano || '-'}</td>
+                            <td>${v.cor || '-'}</td>
+                            <td>R$ ${v.valorHora.toFixed(2)}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button onclick="editarVeiculo(${v.id})">Editar</button>
+                                    <button onclick="deletarVeiculo(${v.id})" class="btn-danger">Deletar</button>
+                                </div>
+                            </td>
+                        </tr>`;
+                    });
+                    html += '</tbody></table>';
+                }
+                document.getElementById('veiculosList').innerHTML = html;
+
+                // Atualizar select de estadias
+                atualizarSelectVeiculos(veiculos);
+            } catch (error) {
+                document.getElementById('veiculosList').innerHTML = '<div class="alert alert-error">Erro ao carregar veículos</div>';
+            }
+        }
+
+        function atualizarSelectVeiculos(veiculos) {
+            const select = document.getElementById('estadia_veiculoId');
+            select.innerHTML = '<option value="">-- Selecione um veículo --</option>';
+            veiculos.forEach(v => {
+                select.innerHTML += `<option value="${v.id}">${v.placa} - ${v.marca} ${v.modelo}</option>`;
+            });
+        }
+
+        async function editarVeiculo(id) {
+            const placa = prompt('Nova placa:');
+            if (!placa) return;
+
+            const response = await fetch(`${API_URL}/veiculos/${id}`);
+            const veiculo = await response.json();
+
+            try {
+                await fetch(`${API_URL}/veiculos/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ...veiculo, placa })
+                });
+                carregarVeiculos();
+                mostrarAlerta('veiculoAlert', 'Veículo atualizado!', 'success');
+            } catch {
+                mostrarAlerta('veiculoAlert', 'Erro ao atualizar', 'error');
+            }
+        }
+
+        async function deletarVeiculo(id) {
+            if (!confirm('Tem certeza?')) return;
+
+            try {
+                const response = await fetch(`${API_URL}/veiculos/${id}`, { method: 'DELETE' });
+                if (response.ok) {
+                    carregarVeiculos();
+                    mostrarAlerta('veiculoAlert', 'Veículo deletado!', 'success');
+                }
+            } catch {
+                mostrarAlerta('veiculoAlert', 'Erro ao deletar', 'error');
+            }
+        }
+
+        // ESTADIAS
+        document.getElementById('formEstadia').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const veiculoId = document.getElementById('estadia_veiculoId').value;
+            
+            try {
+                const response = await fetch(`${API_URL}/estadias`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ veiculoId: parseInt(veiculoId) })
+                });
+
+                if (response.ok) {
+                    mostrarAlerta('estadiaAlert', 'Entrada registrada com sucesso!', 'success');
+                    document.getElementById('formEstadia').reset();
+                    carregarEstadias();
+                } else {
+                    mostrarAlerta('estadiaAlert', 'Erro ao registrar entrada', 'error');
+                }
+            } catch (error) {
+                mostrarAlerta('estadiaAlert', 'Erro ao conectar com a API', 'error');
+            }
+        });
+
+        async function carregarEstadias() {
+            try {
+                const response = await fetch(`${API_URL}/estadias`);
+                const estadias = await response.json();
+
+                const estadiasAtivas = estadias.filter(e => !e.saida);
+                
+                let html = '';
+                if (estadiasAtivas.length === 0) {
+                    html = '<div class="empty-state">Nenhuma estadia ativa</div>';
+                } else {
+                    html = '<table><thead><tr><th>Veículo</th><th>Placa</th><th>Entrada</th><th>Tempo Estacionado</th><th>Valor/Hora</th><th>Ações</th></tr></thead><tbody>';
+                    estadiasAtivas.forEach(e => {
+                        const entrada = new Date(e.entrada);
+                        const agora = new Date();
+                        const horas = (agora - entrada) / (1000 * 60 * 60);
+                        
+                        html += `<tr>
+                            <td>${e.veiculo.marca} ${e.veiculo.modelo}</td>
+                            <td><strong>${e.veiculo.placa}</strong></td>
+                            <td>${entrada.toLocaleString('pt-BR')}</td>
+                            <td>${horas.toFixed(2)}h</td>
+                            <td>R$ ${e.veiculo.valorHora.toFixed(2)}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button onclick="abrirModalSaida(${e.id}, ${e.veiculo.valorHora}, '${e.entrada}')" class="btn-success">Saída</button>
+                                    <button onclick="deletarEstadia(${e.id})" class="btn-danger">Cancelar</button>
+                                </div>
+                            </td>
+                        </tr>`;
+                    });
+                    html += '</tbody></table>';
+                }
+                document.getElementById('estadiasList').innerHTML = html;
+            } catch (error) {
+                document.getElementById('estadiasList').innerHTML = '<div class="alert alert-error">Erro ao carregar estadias</div>';
+            }
+        }
+
+        function abrirModalSaida(id, valorHora, entrada) {
+            estadiaEmEdicao = id;
+            const dataEntrada = new Date(entrada);
+            const agora = new Date();
+            const horas = (agora - dataEntrada) / (1000 * 60 * 60);
+            const valorEstimado = horas * valorHora;
+            
+            document.getElementById('valorTotalEstimado').textContent = valorEstimado.toFixed(2);
+            document.getElementById('saida_data').value = agora.toISOString().slice(0, 16);
+            document.getElementById('modalSaida').classList.add('active');
+        }
+
+        function fecharModalSaida() {
+            document.getElementById('modalSaida').classList.remove('active');
+            estadiaEmEdicao = null;
+        }
+
+        document.getElementById('formSaida').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const saida = document.getElementById('saida_data').value;
+            
+            try {
+                const response = await fetch(`${API_URL}/estadias/${estadiaEmEdicao}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ saida })
+                });
+
+                if (response.ok) {
+                    const resultado = await response.json();
+                    mostrarAlerta('estadiaAlert', `Saída registrada! Total: R$ ${resultado.valorTotal.toFixed(2)}`, 'success');
+                    fecharModalSaida();
+                    carregarEstadias();
+                } else {
+                    mostrarAlerta('estadiaAlert', 'Erro ao registrar saída', 'error');
+                }
+            } catch (error) {
+                mostrarAlerta('estadiaAlert', 'Erro ao conectar com a API', 'error');
+            }
+        });
+
+        async function deletarEstadia(id) {
+            if (!confirm('Cancelar esta estadia?')) return;
+
+            try {
+                const response = await fetch(`${API_URL}/estadias/${id}`, { method: 'DELETE' });
+                if (response.ok) {
+                    carregarEstadias();
+                    mostrarAlerta('estadiaAlert', 'Estadia cancelada!', 'success');
+                }
+            } catch {
+                mostrarAlerta('estadiaAlert', 'Erro ao cancelar', 'error');
+            }
+        }
+
+        function mostrarAlerta(elementId, mensagem, tipo) {
+            const elemento = document.getElementById(elementId);
+            elemento.innerHTML = `<div class="alert alert-${tipo}">${mensagem}</div>`;
+            setTimeout(() => {
+                elemento.innerHTML = '';
+            }, 5000);
+        }
+
+        // Carregar dados iniciais
+        carregarVeiculos();
+        carregarEstadias();
+
+        // Atualizar a cada 5 segundos
+        setInterval(() => {
+            document.getElementById('estadias').classList.contains('active') && carregarEstadias();
+        }, 5000);
+    </script>
+</body>
+</html>
