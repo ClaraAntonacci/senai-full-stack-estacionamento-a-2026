@@ -10,7 +10,7 @@ const {
     excluirEstadia
 } = require("../controllers/estadia.controller");
 
-router.get("/estadias", listarEstadias);
+router.get("/estadias/listar", listarEstadias);
 
 router.get("/estadias/:id", buscarEstadiaPorId);
 

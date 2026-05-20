@@ -10,6 +10,10 @@ app.use(express.json());
 // app.use(routes);
 
  const estadiaRoutes = require("./src/routes/estadia.routes");
+ const veiculoRoutes = require("./src/routes/veiculo.routes");
+
+ app.use(estadiaRoutes);
+ app.use( veiculoRoutes);
 // const veiculoRoutes = require("./src/routes/veiculo.routes");
 
 // app.use("/", estadiaRoutes);
