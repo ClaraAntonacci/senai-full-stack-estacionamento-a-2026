@@ -60,7 +60,7 @@ O projeto foi desenvolvido utilizando HTML, CSS e JavaScript no front-end, junta
 
 ## Diagrama de Casos de Uso
 
-![Diagrama de Casos de Uso]!(.docs/Diagrama-caso-de-uso.png)
+![Diagrama de Casos de Uso](docs/Diagrama-caso-de-uso.png)
 
 ---
 
